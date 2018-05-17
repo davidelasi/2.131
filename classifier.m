@@ -18,10 +18,14 @@ validationFraction = 1 - trainingFraction;
 
 totalBacteria = numel(directory);
 
-%% Loading data and calculating distance and phase autocorrelation
-fc = 14;
+%% Filtering parameters
+
+fc = 10;
 fs = 30;
 [b,a] = butter(6, fc/(fs/2));
+
+%% Loading data and calculating distance and phase autocorrelation
+
 
 for i=1:totalBacteria
     
@@ -39,6 +43,8 @@ for i=1:totalBacteria
     trainingSize{i} = fix(numel(files{i})*trainingFraction);
     
     for j=1:numel(csv{i})
+        csv{1,i}{j}(:,8) = filter(b, a, csv{1,i}{j}(:,8));
+        csv{1,i}{j}(:,9) = filter(b, a, csv{1,i}{j}(:,9));
         distance{1,i}{j} = calculateDistance(csv{1,i}{j}(:,8),csv{1,i}{j}(:,9)); % With DC blocker
         %distance{1,i}{j} = filter(b, a, distance{1,i}{j});
         phase{1,i}{j} = calculatePhase(csv{1,i}{j}(:,8),csv{1,i}{j}(:,9)); % With DC blocker
@@ -88,7 +94,7 @@ ylim([-0.2 0.2]);
 legend(description);
 set(gca,'FontSize',16);
 xlabel('Phase (lags)');
-xlabel('Autocorrelation');
+ylabel('Autocorrelation');
 
 %% Visualization of bacteria movement for selected samples
 
